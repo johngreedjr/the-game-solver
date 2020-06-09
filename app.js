@@ -21,11 +21,47 @@ function replenishHand() {
 
 replenishHand();
 
+function checkForTenAway(currentHand, pile, direction){
+  let check;
+  if ( direction === 'asc' ) {
+    check = currentHand.filter((x) =>{
+      return pile - x === 10;
+    });
+  }
+
+  if ( direction === 'desc' ) {
+    check = currentHand.filter((x) =>{
+      return pile + x === 10;
+    });
+  }
+
+  if (check.length) {
+    const index = hand.indexOf(check[0]);
+    if (index > -1) {
+      hand.splice(index, 1);
+    }
+    return check[0];
+  }
+  return false;
+}
+
+
 function takeTurn() {
   let board = [one, one2, hundred, hundred2];
   console.log('board: ' + board);
 
    let currentHand = _.cloneDeep((hand));
+
+   let check = checkForTenAway(currentHand, one, 'asc');
+
+   if (check) {
+     one = check;
+     console.log('USED RULE OF TEN!');
+     board = [one, one2, hundred, hundred2]
+     console.log('board after playing card: ' + board)
+     return;
+   }
+
    let currentHandFiltered = currentHand.filter(function(x) {
      return x > one;
    });
@@ -34,6 +70,15 @@ function takeTurn() {
     });
 
     currentHand = _.cloneDeep((hand));
+  check = checkForTenAway(currentHand, one2, 'asc');
+
+  if (check) {
+    one2 = check;
+    console.log('USED RULE OF TEN!');
+    board = [one, one2, hundred, hundred2]
+    console.log('board after playing card: ' + board)
+    return;
+  }
     currentHandFiltered = currentHand.filter(function(x) {
       return x > one2;
     });
@@ -42,6 +87,16 @@ function takeTurn() {
     });
 
     currentHand = _.cloneDeep((hand))
+
+  check = checkForTenAway(currentHand, hundred, 'desc');
+
+  if (check) {
+    hundred = check;
+    console.log('USED RULE OF TEN!');
+    board = [one, one2, hundred, hundred2]
+    console.log('board after playing card: ' + board)
+    return;
+  }
     currentHandFiltered = currentHand.filter(function(x) {
       return x < hundred;
     });
@@ -50,6 +105,16 @@ function takeTurn() {
     });
 
     currentHand = _.cloneDeep((hand))
+  check = checkForTenAway(currentHand, hundred2, 'desc');
+
+  if (check) {
+    hundred2 = check;
+    console.log('USED RULE OF TEN!');
+    console.log('hand: ' + hand);
+    board = [one, one2, hundred, hundred2]
+    console.log('board after playing card: ' + board)
+    return;
+  }
     currentHandFiltered = currentHand.filter(function(x) {
       return x < hundred2;
     });
@@ -80,16 +145,16 @@ function takeTurn() {
 
   let differentials = [diff1, diff2, diff3, diff4];
 
+  console.log('hand: ' + hand)
+  console.log('differentials: ' + differentials)
+
   if (_.sum(differentials) === 4000) {
-    console.log('Failed!!')
-    console.log('Cards Left: ' + pile)
+    console.log('Failed!! No more cards to play.')
+    console.log('Cards Left in the deck: ' + pile)
     process.exit()
   }
 
-  console.log('hand: ' + hand)
-  console.log('differentials: ' + differentials)
   let lowestDiffSelection = differentials.indexOf(Math.min(...differentials)) + 1;
-
 
   let choice = `selection${lowestDiffSelection}`;
   console.log('choice ' + choice)
