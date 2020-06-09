@@ -21,7 +21,8 @@ function replenishHand() {
 
 replenishHand();
 
-function takeTurn() {
+function takeTurn(secondaryHand) {
+  hand = secondaryHand ? secondaryHand : hand;
   let board = [one, one2, hundred, hundred2];
   console.log('board: ' + board);
   let currentHand = _.cloneDeep((hand));
@@ -51,49 +52,120 @@ function takeTurn() {
   let diff4 = Math.abs(selection4[0] - hundred2);
 
   if ( selection1[0] < one ) {
-    diff1 = 1000;
+    diff1 = getNewDiff(selection1[0], one);
   }
 
   if ( selection2[0] < one2 ) {
-    diff2 = 1000;
+    diff2 = getNewDiff(selection2[0], one2);
   }
 
   if ( selection3[0] > hundred ){
-    diff3 = 1000;
+    diff3 = getNewDiffBackwards(selection3[0], hundred);
 
   }
 
   if ( selection4[0] > hundred2 ){
-    diff4 = 1000;
+    diff4 = getNewDiffBackwards(selection4[0], hundred2);
 
   }
 
+  function getNewDiff(selection, comparisonPile, currentHand) {
+    currentHand = currentHand ? currentHand : _.cloneDeep((hand));
+    if (currentHand == []) {
+      return 1000;
+    }
+    const index = currentHand.indexOf(selection);
+    if (index > -1) {
+      currentHand.splice(index, 1);
+    }
+    let newSelection = currentHand.sort((a, b) => {
+      return Math.abs(comparisonPile - a) - Math.abs(comparisonPile - b);
+    });
+
+    if ( newSelection[0] < comparisonPile ) {
+      getNewDiff(newSelection[0], comparisonPile, currentHand);
+    }
+    return Math.abs(newSelection[0] - comparisonPile);
+  }
+
+  function getNewDiffBackwards(selection, comparisonPile, currentHand) {
+    currentHand = currentHand ? currentHand : _.cloneDeep((hand));
+    if (currentHand = []) {
+      return 1000;
+    }
+    const index = currentHand.indexOf(selection);
+    if (index > -1) {
+      currentHand.splice(index, 1);
+    }
+
+    let newSelection = currentHand.sort((a, b) => {
+      return Math.abs(comparisonPile - a) - Math.abs(comparisonPile - b);
+    });
+
+    if ( newSelection[0] > comparisonPile ) {
+      getNewDiff(newSelection[0], comparisonPile, currentHand);
+    }
+    return Math.abs(newSelection[0] - comparisonPile);
+  }
+
+  if (isNaN(diff1)) {
+    diff1 = 1000;
+  }
+
+  if (isNaN(diff2)) {
+    diff2 = 1000;
+  }
+
+  if (isNaN(diff3)) {
+    diff3  = 1000;
+  }
+
+  if (isNaN(diff4)) {
+    diff4 = 1000;
+  }
+
   let differentials = [diff1, diff2, diff3, diff4];
-  console.log('hand: ' + hand)
-  console.log('differentials: ' + differentials)
+  console.log('hand: ' + hand);
+  console.log('differentials: ' + differentials);
+
+  if (_.sum(differentials) === 4000) {
+    //get next best number if it exists.
+    console.log('Failed!!!\n')
+    console.log('Remaining Cards in Pile: ' + pile);
+    process.exit()
+    // const index = hand.indexOf(selection1[0]);
+    // let secondaryHand = _.cloneDeep(hand);
+    // if (index > -1) {
+    //   secondaryHand.splice(index, 1);
+    // }
+    // takeTurn(secondaryHand);
+  }
+
+
   let lowestDiffSelection = differentials.indexOf(Math.min(...differentials)) + 1;
+
 
 
   let choice = `selection${lowestDiffSelection}`;
   console.log('choice ' + choice)
   let removeCard;
 
-  if ( choice == 'selection1' ) {
+  if ( choice == 'selection1'  ) {
     one = selection1[0];
     removeCard = one;
   }
 
-  if ( choice == 'selection2' ) {
+  if ( choice == 'selection2'  ) {
     one2 = selection2[0];
     removeCard = one2;
   }
 
-  if ( choice == 'selection3' && selection3[0] < hundred) {
+  if ( choice == 'selection3'  ) {
     hundred = selection3[0];
     removeCard = hundred
   }
 
-  if ( choice == 'selection4'  && selection4[0] < hundred2) {
+  if ( choice == 'selection4' ) {
     hundred2 = selection4[0];
     removeCard = hundred2
   }
@@ -130,6 +202,6 @@ while (hand.length) {
   idx++;
 }
 
-
+console.log('Success!! All Cards used!')
 
 
