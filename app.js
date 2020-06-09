@@ -24,24 +24,36 @@ replenishHand();
 function takeTurn() {
   let board = [one, one2, hundred, hundred2];
   console.log('board: ' + board);
-  let currentHand = _.cloneDeep((hand));
 
-   let selection1 = currentHand.sort((a, b) => {
+   let currentHand = _.cloneDeep((hand));
+   let currentHandFiltered = currentHand.filter(function(x) {
+     return x > one;
+   });
+   let selection1 = currentHandFiltered.sort((a, b) => {
       return Math.abs(one - a) - Math.abs(one - b);
     });
 
-    currentHand = _.cloneDeep((hand))
-    let selection2 = currentHand.sort((a, b) => {
+    currentHand = _.cloneDeep((hand));
+    currentHandFiltered = currentHand.filter(function(x) {
+      return x > one2;
+    });
+    let selection2 = currentHandFiltered.sort((a, b) => {
       return Math.abs(one2 - a) - Math.abs(one2 - b);
     });
 
     currentHand = _.cloneDeep((hand))
-    let selection3 = currentHand.sort((a, b) => {
+    currentHandFiltered = currentHand.filter(function(x) {
+      return x < hundred;
+    });
+    let selection3 = currentHandFiltered.sort((a, b) => {
       return Math.abs(hundred - a) - Math.abs(hundred - b) ;
     });
 
     currentHand = _.cloneDeep((hand))
-    let selection4 = currentHand.sort((a, b) => {
+    currentHandFiltered = currentHand.filter(function(x) {
+      return x < hundred2;
+    });
+    let selection4 = currentHandFiltered.sort((a, b) => {
       return Math.abs(hundred2 - a) - Math.abs(hundred2 - b);
     });
 
@@ -50,25 +62,30 @@ function takeTurn() {
   let diff3 = Math.abs(selection3[0] - hundred);
   let diff4 = Math.abs(selection4[0] - hundred2);
 
-  if ( selection1[0] < one ) {
+  if ( isNaN(diff1) ) {
     diff1 = 1000;
   }
 
-  if ( selection2[0] < one2 ) {
+  if ( isNaN(diff2) ) {
     diff2 = 1000;
   }
 
-  if ( selection3[0] > hundred ){
+  if ( isNaN(diff3) ) {
     diff3 = 1000;
-
   }
 
-  if ( selection4[0] > hundred2 ){
+  if ( isNaN(diff4) ) {
     diff4 = 1000;
-
   }
 
   let differentials = [diff1, diff2, diff3, diff4];
+
+  if (_.sum(differentials) === 4000) {
+    console.log('Failed!!')
+    console.log('Cards Left: ' + pile)
+    process.exit()
+  }
+
   console.log('hand: ' + hand)
   console.log('differentials: ' + differentials)
   let lowestDiffSelection = differentials.indexOf(Math.min(...differentials)) + 1;
@@ -130,6 +147,7 @@ while (hand.length) {
   idx++;
 }
 
+console.log('Success!!!')
 
 
 
