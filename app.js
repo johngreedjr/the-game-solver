@@ -54,29 +54,9 @@ function takeTurn() {
 
   let lowestDiffSelection = differentials.indexOf(Math.min(...differentials)) + 1;
 
-  let choice = `selection${lowestDiffSelection}`;
-  let removeCard;
-
-  if ( choice == 'selection1' ) {
-    set.set1 = selections.selection1[0];
-    removeCard = set.set1;
-  }
-
-  if ( choice == 'selection2' ) {
-    set.set2 = selections.selection2[0];
-    removeCard = set.set2;
-  }
-
-  if ( choice == 'selection3' && selections.selection3[0] < set.set3) {
-    set.set3 = selections.selection3[0];
-    removeCard = set.set3
-  }
-
-  if ( choice == 'selection4'  && selections.selection4[0] < set.set4) {
-    set.set4 = selections.selection4[0];
-    removeCard = set.set4
-  }
-
+  set[`set${lowestDiffSelection}`] = selections[`selection${lowestDiffSelection}`][0];
+  let removeCard = set[`set${lowestDiffSelection}`];
+  
   const index = hand.indexOf(removeCard);
   if (index > -1) {
     hand.splice(index, 1);
