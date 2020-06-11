@@ -37,28 +37,12 @@ function takeTurn() {
     return;
   }
 
-  let diff1 = Math.abs(selections.selection1[0] - set.set1);
-  let diff2 = Math.abs(selections.selection2[0] - set.set2);
-  let diff3 = Math.abs(selections.selection3[0] - set.set3);
-  let diff4 = Math.abs(selections.selection4[0] - set.set4);
-
-  if ( isNaN(diff1) ) {
-    diff1 = 1000;
+  let diffs = {};
+  for ( let i = 1; i < 5; i++ ) {
+    findDifferentials(diffs, selections, i)
   }
 
-  if ( isNaN(diff2) ) {
-    diff2 = 1000;
-  }
-
-  if ( isNaN(diff3) ) {
-    diff3 = 1000;
-  }
-
-  if ( isNaN(diff4) ) {
-    diff4 = 1000;
-  }
-
-  let differentials = [diff1, diff2, diff3, diff4];
+  let differentials = [diffs.diff1, diffs.diff2, diffs.diff3, diffs.diff4];
 
   console.log('differentials: ' + differentials)
 
@@ -187,6 +171,13 @@ function getSelection(index) {
   return currentHandFiltered.sort((a, b) => {
     return Math.abs(set[`set${index}`] - a) - Math.abs(set[`set${index}`] - b);
   });
+}
+
+function findDifferentials(diffs, selections, index) {
+  diffs[`diff${index}`] = Math.abs( selections[`selection${index}`][0] - set[`set${index}`]);
+  if ( isNaN(diffs[`diff${index}`]) ) {
+    diffs[`diff${index}`] = 1000;
+  }
 }
 
 
