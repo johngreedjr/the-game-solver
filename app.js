@@ -25,65 +25,22 @@ replenishHand();
 
 function takeTurn() {
   let board = [set.set1, set.set2, set.set3, set.set4];
-  console.log('board: ' + board);
   console.log('hand: ' + hand);
+  console.log('board: ' + board);
 
-   let currentHand = _.cloneDeep((hand));
-   let check = checkForTenAway(currentHand, set.set1, 'asc');
-   if (check) {
-     setCard('set1', check);
-     return;
-   }
-   let currentHandFiltered = currentHand.filter(function(x) {
-     return x > set.set1;
-   });
-   let selection1 = currentHandFiltered.sort((a, b) => {
-      return Math.abs(set.set1 - a) - Math.abs(set.set1 - b);
-    });
+  let selections = {};
+  for ( let i = 1; i < 5; i++ ) {
+    selections[`selection${i}`] = getSelection(i);
+  }
 
-    currentHand = _.cloneDeep((hand));
-    check = checkForTenAway(currentHand, set.set2, 'asc');
-    if (check) {
-      setCard('set2', check);
-      return;
-    }
-    currentHandFiltered = currentHand.filter(function(x) {
-      return x > set.set2;
-    });
-    let selection2 = currentHandFiltered.sort((a, b) => {
-      return Math.abs(set.set2 - a) - Math.abs(set.set2 - b);
-    });
+  if ( Object.values(selections).includes(-1) ){
+    return;
+  }
 
-    currentHand = _.cloneDeep((hand))
-    check = checkForTenAway(currentHand, set.set3, 'desc');
-    if (check) {
-      setCard('set3', check);
-      return;
-    }
-    currentHandFiltered = currentHand.filter(function(x) {
-      return x < set.set3;
-    });
-    let selection3 = currentHandFiltered.sort((a, b) => {
-      return Math.abs(set.set3 - a) - Math.abs(set.set3 - b) ;
-    });
-
-    currentHand = _.cloneDeep((hand))
-    check = checkForTenAway(currentHand, set.set4, 'desc');
-    if (check) {
-      setCard('set4', check);
-      return;
-    }
-    currentHandFiltered = currentHand.filter(function(x) {
-      return x < set.set4;
-    });
-    let selection4 = currentHandFiltered.sort((a, b) => {
-      return Math.abs(set.set4 - a) - Math.abs(set.set4 - b);
-    });
-
-  let diff1 = Math.abs(selection1[0] - set.set1);
-  let diff2 = Math.abs(selection2[0] - set.set2);
-  let diff3 = Math.abs(selection3[0] - set.set3);
-  let diff4 = Math.abs(selection4[0] - set.set4);
+  let diff1 = Math.abs(selections.selection1[0] - set.set1);
+  let diff2 = Math.abs(selections.selection2[0] - set.set2);
+  let diff3 = Math.abs(selections.selection3[0] - set.set3);
+  let diff4 = Math.abs(selections.selection4[0] - set.set4);
 
   if ( isNaN(diff1) ) {
     diff1 = 1000;
@@ -117,22 +74,22 @@ function takeTurn() {
   let removeCard;
 
   if ( choice == 'selection1' ) {
-    set.set1 = selection1[0];
+    set.set1 = selections.selection1[0];
     removeCard = set.set1;
   }
 
   if ( choice == 'selection2' ) {
-    set.set2 = selection2[0];
+    set.set2 = selections.selection2[0];
     removeCard = set.set2;
   }
 
-  if ( choice == 'selection3' && selection3[0] < set.set3) {
-    set.set3 = selection3[0];
+  if ( choice == 'selection3' && selections.selection3[0] < set.set3) {
+    set.set3 = selections.selection3[0];
     removeCard = set.set3
   }
 
-  if ( choice == 'selection4'  && selection4[0] < set.set4) {
-    set.set4 = selection4[0];
+  if ( choice == 'selection4'  && selections.selection4[0] < set.set4) {
+    set.set4 = selections.selection4[0];
     removeCard = set.set4
   }
 
@@ -201,6 +158,35 @@ function setCard(setNumber, check) {
   console.log('USED RULE OF TEN!');
   board = [set.set1, set.set2, set.set3, set.set4]
   console.log('board after playing card: ' + board)
+}
+
+function getSelection(index) {
+  let currentHand = _.cloneDeep((hand));
+
+  let check;
+  let currentHandFiltered;
+  if (index === 1 || index === 2) {
+     check = checkForTenAway(currentHand, set[`set${index}`], 'asc');
+      currentHandFiltered = currentHand.filter(function(x) {
+      return x > set[`set${index}`];
+    });
+  }
+  else {
+     check = checkForTenAway(currentHand, set[`set${index}`], 'desc');
+      currentHandFiltered = currentHand.filter(function(x) {
+      return x < set[`set${index}`];
+    });
+  }
+
+  // use rule of 10, return -1 to tell takeTurn function to stop
+  if (check) {
+    setCard(`set${index}`, check);
+    return -1;
+  }
+
+  return currentHandFiltered.sort((a, b) => {
+    return Math.abs(set[`set${index}`] - a) - Math.abs(set[`set${index}`] - b);
+  });
 }
 
 
