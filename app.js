@@ -83,8 +83,6 @@ while (hand.length) {
   console.log('ROUND ' + idx);
   console.log('PLAY FIRST CARD')
   takeTurn();
-  console.log('PLAY SECOND CARD')
-  takeTurn();
   console.log('-------------')
   idx++;
 }
